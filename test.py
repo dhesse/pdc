@@ -6,9 +6,10 @@ import numpy.testing as npt
 class TestGroupBySummarizeN(unittest.TestCase):
 
     def test_sum_n(self):
-        a = DataFrame(x = scipy.random.randint(0, 10, 100),
+        a = DataFrame(globals(),
+                      x = scipy.random.randint(0, 10, 100),
                       y = scipy.random.randint(0, 10, 100))
-        s = a.group_by('x', 'y').summarize(n = n())
+        s = a.group_by(x, y).summarize(n = n())
         self.assertEqual(s.n.sum(), 100)
     def test_mean(self):
         df = DataFrame(x = scipy.random.randint(0, 10, 100))

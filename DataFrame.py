@@ -20,12 +20,27 @@ def mean(col):
 def sd(col):
     return col.std()
 
+class Column(object):
+    def __init__(self, name, parent):
+        self.name = name
+        self.parent = parent
+    def __hash__(self):
+        return hash(self.name)
+    def __str__(self):
+        return self.name
+
 class DataFrame(object):
-    def __init__(self, **kwargs):
+    def __init__(self, scope=None, **kwargs):
+        if scope == None:
+            scope = {}
         self.columns = {}
         self.N = kwargs.values()[0].shape
         for k in kwargs:
             self.columns[k] = kwargs[k]
+            if k not in scope:
+                scope[k] = Column(k, self)
+            else:
+                print "Warning: Variable '{0}' present in globals, not set!".format(k)
     def group_by(self, *args):
         self.group_vecs = [(scipy.ones(self.N, bool), {})]
         for col in args:
@@ -40,7 +55,7 @@ class DataFrame(object):
         vals = defaultdict(list)
         for _, d in self.group_vecs:
             for k in d:
-                vals[k].append(d[k])
+                vals[str(k)].append(d[k])
         for k in vals:
             vals[k] = scipy.array(vals[k])
         for col in kwargs:
