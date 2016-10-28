@@ -25,6 +25,18 @@ class TestGroupBySummarizeN(unittest.TestCase):
             npt.assert_allclose(0, s.sd)
         except AssertionError:
             self.fail("s.x and s.sd not close")
+    def test_mean_add(self):
+        x = scipy.random.randint(0, 10, 100)
+        twox = x * 2
+        df = DataFrame(x = x, tx = 2*x)
+        glob = df.scope
+        print glob
+        s = df.group_by('tx').summarize(txo = mean(glob['x'] +
+                                                   glob['x']))
+        try:
+            npt.assert_allclose(s.txo, s.tx)
+        except AssertionError:
+            self.fail("txo and tx not close")
 
 if __name__ == "__main__":
     unittest.main()
