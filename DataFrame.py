@@ -3,7 +3,22 @@ from collections import defaultdict
 from itertools import product
 
 def n():
-    return lambda mask, x: mask[mask.nonzero()].shape[0]
+    return lambda mask, _: mask[mask.nonzero()].shape[0]
+
+def summarize_fn(fn):
+    def wrapped(*cols):
+        def inner(mask, df):
+            return fn(*[df[col][mask.nonzero()] for col in cols])
+        return inner
+    return wrapped
+
+@summarize_fn
+def mean(col):
+    return col.mean()
+
+@summarize_fn
+def sd(col):
+    return col.std()
 
 class DataFrame(object):
     def __init__(self, **kwargs):
