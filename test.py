@@ -1,6 +1,6 @@
 import unittest
 import scipy
-from DataFrame import DataFrame, n, mean, sd
+from DataFrame import DataFrame, n, mean, sd, TEMP_COLS
 import numpy.testing as npt
 
 class TestGroupBySummarizeN(unittest.TestCase):

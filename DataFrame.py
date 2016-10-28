@@ -77,6 +77,8 @@ class DataFrame(object):
             vals[col] = scipy.array(
                 [fn(bitmask, self) for bitmask, _ in
                  self.group_vecs])
+        global TEMP_COLS
+        TEMP_COLS = {"": None}
         return DataFrame(self.scope, **vals)
     def __getattr__(self, name):
         return self.columns.get(name, None)
