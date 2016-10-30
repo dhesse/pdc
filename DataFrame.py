@@ -9,8 +9,13 @@ def n():
 def summarize_fn(fn):
     def wrapped(*cols):
         def inner(mask, df):
-            #print df, cols, TEMP_COLS
-            return fn(*[df[col][mask.nonzero()] for col in cols])
+            cols_actual = []
+            for col in cols:
+                try:
+                    cols_actual.append(df[col])
+                except TypeError:
+                    cols_actual.append(col)
+            return fn(*[col[mask.nonzero()] for col in cols_actual])
         return inner
     return wrapped
 
@@ -22,31 +27,27 @@ def mean(col):
 def sd(col):
     return col.std()
 
-TEMP_COLS = {"-": None}
-
 class Column(object):
     def __init__(self, name, parent):
         self.name = name
         self.parent = parent
+    def get(self):
+        return self.parent[self.name]
     def __hash__(self):
         return hash(self.name)
     def __str__(self):
         return self.name
     def __add__(self, other):
-        vals = self.parent[self.name] + other.parent[other.name]
-        name = max(TEMP_COLS) + "-"
-        result = Column(name, None)
-        TEMP_COLS[result] = vals
-        return result
-        
+        return self.get() + other.get()
 
 class DataFrame(object):
-    def __init__(self, scope=None, **kwargs):
+    def __init__(self, scope = None, **kwargs):
         self.scope = scope or {}
         self.columns = {}
         self.N = kwargs.values()[0].shape
         for k in kwargs:
             self.register_column(k, kwargs[k])
+        self.temps = []
             
     def register_column(self, colname, value):
         self.columns[colname] = value
@@ -77,12 +78,10 @@ class DataFrame(object):
             vals[col] = scipy.array(
                 [fn(bitmask, self) for bitmask, _ in
                  self.group_vecs])
-        global TEMP_COLS
-        TEMP_COLS = {"": None}
-        return DataFrame(self.scope, **vals)
+        return DataFrame(**vals)
     def __getattr__(self, name):
         return self.columns.get(name, None)
     def __getitem__(self, name):
-        return self.columns.get(name, TEMP_COLS.get(name, None))
+        return self.columns.get(name, None)
     def __setitem__(self, key, value):
         self.columns[key] = value

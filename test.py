@@ -1,6 +1,6 @@
 import unittest
 import scipy
-from DataFrame import DataFrame, n, mean, sd, TEMP_COLS
+from DataFrame import DataFrame, n, mean, sd
 import numpy.testing as npt
 
 class TestGroupBySummarizeN(unittest.TestCase):
@@ -30,7 +30,6 @@ class TestGroupBySummarizeN(unittest.TestCase):
         twox = x * 2
         df = DataFrame(x = x, tx = 2*x)
         glob = df.scope
-        print glob
         s = df.group_by('tx').summarize(txo = mean(glob['x'] +
                                                    glob['x']))
         try:
