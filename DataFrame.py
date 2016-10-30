@@ -62,7 +62,8 @@ class DataFrame(object):
             self.group_vecs = [(v & (self[col] == val),
                                dict(d, **{col: val}))
                                for (v, d), val in product(self.group_vecs,
-                                                          scipy.unique(self[col]))]
+                                                          scipy.unique(self[col]))
+                               if v.any()]
         self.group_vecs = [(m, d) for m, d in self.group_vecs
                            if m.any()]
         return self

@@ -3,14 +3,14 @@ import scipy
 from DataFrame import DataFrame, n, mean, sd
 import numpy.testing as npt
 
-class ArrayTest(unittest.TestCase):
+class ArrayTest(object):
     def assertAllClose(self, a, b):
         try:
             npt.assert_allclose(a, b)
         except AssertionError:
             self.fail("{0} and {1} not close!".format(a, b))
 
-class TestGroupBySummarizeN(ArrayTest):
+class TestGroupBySummarizeN(ArrayTest, unittest.TestCase):
 
     def test_sum_n(self):
         a = DataFrame(globals(),
