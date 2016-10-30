@@ -3,7 +3,14 @@ import scipy
 from DataFrame import DataFrame, n, mean, sd
 import numpy.testing as npt
 
-class TestGroupBySummarizeN(unittest.TestCase):
+class ArrayTest(unittest.TestCase):
+    def assertAllClose(self, a, b):
+        try:
+            npt.assert_allclose(a, b)
+        except AssertionError:
+            self.fail("{0} and {1} not close!".format(a, b))
+
+class TestGroupBySummarizeN(ArrayTest):
 
     def test_sum_n(self):
         a = DataFrame(globals(),
@@ -14,17 +21,11 @@ class TestGroupBySummarizeN(unittest.TestCase):
     def test_mean(self):
         df = DataFrame(x = scipy.random.randint(0, 10, 100))
         s = df.group_by('x').summarize(mu=mean('x'))
-        try:
-            npt.assert_allclose(s.x, s.mu)
-        except AssertionError:
-            self.fail("s.x and s.mu not close")
+        self.assertAllClose(s.x, s.mu)
     def test_sd(self):
         df = DataFrame(x = scipy.random.randint(0, 10, 100))
         s = df.group_by('x').summarize(sd=sd('x'))
-        try:
-            npt.assert_allclose(0, s.sd)
-        except AssertionError:
-            self.fail("s.x and s.sd not close")
+        self.assertAllClose(0, s.sd)
     def test_mean_add(self):
         x = scipy.random.randint(0, 10, 100)
         twox = x * 2
@@ -32,10 +33,7 @@ class TestGroupBySummarizeN(unittest.TestCase):
         glob = df.scope
         s = df.group_by('tx').summarize(txo = mean(glob['x'] +
                                                    glob['x']))
-        try:
-            npt.assert_allclose(s.txo, s.tx)
-        except AssertionError:
-            self.fail("txo and tx not close")
+        self.assertAllClose(s.txo, s.tx)
 
 if __name__ == "__main__":
     unittest.main()
